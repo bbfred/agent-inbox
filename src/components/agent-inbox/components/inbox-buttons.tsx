@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { PillButton } from "@/components/ui/pill-button";
 import { useQueryParams } from "../hooks/use-query-params";
-import { Layers, Loader, TriangleAlert, ZapOff } from "lucide-react";
+import { Layers, Loader, Play, TriangleAlert, ZapOff } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { INBOX_PARAM } from "../constants";
+import { INBOX_PARAM, START_VIEW_PARAM_VALUE } from "../constants";
 import { ThreadStatusWithAll } from "../types";
 
 const idleInboxesSVG = (
@@ -58,13 +59,32 @@ function InboxButton({
 export function InboxButtons({
   changeInbox,
 }: {
-  changeInbox: (inbox: ThreadStatusWithAll) => void;
+  changeInbox: (inbox: ThreadStatusWithAll | typeof START_VIEW_PARAM_VALUE) => void;
 }) {
   const { searchParams } = useQueryParams();
   const selectedInbox = searchParams.get(INBOX_PARAM) || "interrupted";
+  
+  const handleStartClick = () => {
+    changeInbox(START_VIEW_PARAM_VALUE as any); // Cast needed if changeInbox expects ThreadStatusWithAll
+  };
 
   return (
     <div className="flex w-full gap-2 items-center justify-start">
+      <Button
+        variant={selectedInbox === START_VIEW_PARAM_VALUE ? "outline" : "ghost"}
+        onClick={handleStartClick}
+        className={cn(
+          "flex items-center gap-1.5 text-sm",
+          selectedInbox === START_VIEW_PARAM_VALUE 
+            ? "bg-accent text-accent-foreground hover:bg-accent/90 border-accent"
+            : "text-muted-foreground hover:text-foreground"
+        )}
+        size="sm"
+      >
+        <Play className="h-3.5 w-3.5" />
+        New Run
+      </Button>
+      <div className="h-5 w-px bg-border mx-1" />
       <InboxButton
         label="All"
         selectedInbox={selectedInbox}

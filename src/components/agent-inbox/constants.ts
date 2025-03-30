@@ -8,3 +8,4 @@ export const AGENT_INBOX_PARAM = "agent_inbox";
 export const NO_INBOXES_FOUND_PARAM = "no_inboxes_found";
 export const AGENT_INBOX_GITHUB_README_URL =
   "https://github.com/langchain-ai/agent-inbox/blob/main/README.md";
+export const START_VIEW_PARAM_VALUE = "start";
