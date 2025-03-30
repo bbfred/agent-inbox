@@ -9,6 +9,8 @@ import { constructOpenInStudioURL } from "../utils";
 import { Button } from "@/components/ui/button";
 import NextLink from "next/link";
 import { useThreadsContext } from "../contexts/ThreadContext";
+import { useQueryParams } from "../hooks/use-query-params";
+import { VIEW_STATE_THREAD_QUERY_PARAM } from "../constants";
 
 interface GenericInboxItemProps<
   ThreadValues extends Record<string, any> = Record<string, any>,
@@ -26,6 +28,7 @@ export function GenericInboxItem<
 >({ threadData, isLast }: GenericInboxItemProps<ThreadValues>) {
   const { agentInboxes } = useThreadsContext<ThreadValues>();
   const { toast } = useToast();
+  const { updateQueryParams } = useQueryParams();
 
   const deploymentUrl = agentInboxes.find((i) => i.selected)?.deploymentUrl;
 
@@ -51,17 +54,39 @@ export function GenericInboxItem<
     "MM/dd h:mm a"
   );
 
+  // Check if the item is idle and should be clickable
+  const isIdleAndClickable = threadData.status === 'idle';
+
+  const handleClick = () => {
+    if (isIdleAndClickable) {
+      updateQueryParams(
+        VIEW_STATE_THREAD_QUERY_PARAM,
+        threadData.thread.thread_id
+      );
+    }
+  };
+
   return (
     <div
+      onClick={handleClick}
       className={cn(
-        "grid grid-cols-12 w-full p-7 items-center",
-        !isLast && "border-b-[1px] border-gray-200"
+        "grid grid-cols-12 w-full p-6 items-center",
+        !isLast && "border-b-[1px] border-gray-200",
+        // Apply interactive styles conditionally based on idle status
+        isIdleAndClickable && "cursor-pointer hover:bg-gray-50/90 transition-colors ease-in-out"
       )}
     >
+      {/* Column for indicator dot */}
+      <div className="col-span-1 flex justify-start items-center">
+        {isIdleAndClickable && (
+          <div className="w-[6px] h-[6px] rounded-full bg-green-400" />
+        )}
+      </div>
+
       <div
         className={cn(
           "flex items-center justify-start gap-2",
-          deploymentUrl ? "col-span-7" : "col-span-9"
+          deploymentUrl ? "col-span-6" : "col-span-8"
         )}
       >
         <p className="text-black text-sm font-semibold">Thread ID:</p>

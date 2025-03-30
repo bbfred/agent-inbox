@@ -250,7 +250,7 @@ export function StateView({
   const [expanded, setExpanded] = useState(false);
 
   const threadValues = threadData.thread.values;
-  const description = threadData.interrupts?.[0].description;
+  const description = threadData.interrupts?.[0]?.description;
 
   if (!threadValues) {
     return <div>No state found</div>;
@@ -260,9 +260,13 @@ export function StateView({
     <div className="overflow-y-auto pl-6 border-t-[1px] lg:border-t-[0px] lg:border-l-[1px] border-gray-100 flex flex-row gap-0 w-full">
       {view === "description" && (
         <div className="pt-6 pb-2">
-          <MarkdownText className="text-wrap break-words whitespace-pre-wrap">
-            {description || "No description provided"}
-          </MarkdownText>
+          {threadData.interrupts ? (
+            <MarkdownText className="text-wrap break-words whitespace-pre-wrap">
+              {description || "No description provided"}
+            </MarkdownText>
+          ) : (
+            <p className="text-gray-600">No description available for this thread.</p>
+          )}
         </div>
       )}
       {view === "state" && (
